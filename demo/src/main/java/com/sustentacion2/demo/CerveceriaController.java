@@ -1,4 +1,5 @@
 package com.sustentacion2.demo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sustentacion2.demo.Domain.Cerveceria;
 import com.sustentacion2.demo.Repository.CerveceriaRepository;
+import com.sustentacion2.demo.Services.CerveceriaService;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
@@ -26,6 +28,8 @@ import com.sustentacion2.demo.Repository.CerveceriaRepository;
 public class CerveceriaController {
     @Autowired
     CerveceriaRepository cerveceriaRepository;
+    @Autowired
+    CerveceriaService service;
 
     @GetMapping("/cervecerias")
     public ResponseEntity<List<Cerveceria>> getAllCervecerias(@RequestParam(required = false) String nombre) {
@@ -33,9 +37,9 @@ public class CerveceriaController {
             List<Cerveceria> cervecerias = new ArrayList<>();
 
             if (nombre == null)
-                cervecerias.addAll(cerveceriaRepository.findAll()); // Get all tutorials
+                cervecerias.addAll(cerveceriaRepository.findAll()); // Get all cervce
             else
-                cervecerias.addAll(cerveceriaRepository.findByNombre(nombre)); // Filter by title
+                cervecerias.add(service.findByName(nombre,cerveceriaRepository)); // Filter by nombre
 
             return new ResponseEntity<>(cervecerias, HttpStatus.OK);
         } catch (Exception e) {
@@ -57,8 +61,10 @@ public class CerveceriaController {
     @PostMapping("/cervecerias")
     public ResponseEntity<Cerveceria> createCerveceria(@RequestBody Cerveceria cerveceria) {
         try {
-            Cerveceria _cerveceria = cerveceriaRepository.save(new Cerveceria(cerveceria.getNombre(),cerveceria.getDepartamento(),cerveceria.getMunicipio(),cerveceria.getNomenclatura(),cerveceria.getMarca_cerveza(),cerveceria.getStock()));
-                    
+            Cerveceria _cerveceria = cerveceriaRepository.save(
+                    new Cerveceria(cerveceria.getNombre(), cerveceria.getDepartamento(), cerveceria.getMunicipio(),
+                            cerveceria.getNomenclatura(), cerveceria.getMarca_cerveza(), cerveceria.getStock()));
+
             return new ResponseEntity<>(_cerveceria, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -66,7 +72,8 @@ public class CerveceriaController {
     }
 
     @PutMapping("/cervecerias/{id}")
-    public ResponseEntity<Cerveceria> updateCerveceria(@PathVariable("id") long id, @RequestBody Cerveceria cerveceria) {
+    public ResponseEntity<Cerveceria> updateCerveceria(@PathVariable("id") long id,
+            @RequestBody Cerveceria cerveceria) {
         Optional<Cerveceria> cerveceriaData = cerveceriaRepository.findById(id);
 
         if (cerveceriaData.isPresent()) {
@@ -92,6 +99,7 @@ public class CerveceriaController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @DeleteMapping("/tutorials")
     public ResponseEntity<?> deleteAllcervecerias() {
         try {
@@ -101,12 +109,14 @@ public class CerveceriaController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/cerveceria/nombre")
-    public ResponseEntity<List<Cerveceria>> findByPublished(@PathVariable("nombre") String nombre) {
-        try {
-            List<Cerveceria> cerveceria = cerveceriaRepository.findByNombre(nombre);
 
-            if (cerveceria.isEmpty()) {
+    @GetMapping("/cerveceria/{nombre}")
+    public ResponseEntity<Cerveceria> findByPublished(@PathVariable("nombre") String nombre) {
+        try {
+
+            Cerveceria cerveceria = service.findByName(nombre, cerveceriaRepository);
+            System.out.println(cerveceria);
+            if (cerveceria == null) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(cerveceria, HttpStatus.OK);

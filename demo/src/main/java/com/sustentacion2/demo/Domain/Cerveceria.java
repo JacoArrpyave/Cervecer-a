@@ -6,9 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "cervecerias")
+@Data
 public class Cerveceria {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,59 +41,5 @@ public class Cerveceria {
     public Cerveceria() {
     }
 
-    public long getId() {
-        return id;
-    }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String name) {
-        this.nombre = name;
-    }
-
-    public String getDepartamento() {
-        return departamento;
-    }
-
-    public void setDepartamento(String departamento) {
-        this.departamento = departamento;
-    }
-
-    public String getMunicipio() {
-        return municipio;
-    }
-
-    public void setMunicipio(String municipio) {
-        this.municipio = municipio;
-    }
-
-    public String getNomenclatura() {
-        return nomenclatura;
-    }
-
-    public void setNomenclatura(String nomenclatura) {
-        this.nomenclatura = nomenclatura;
-    }
-
-    public String getMarca_cerveza() {
-        return marca_cerveza;
-    }
-
-    public void setMarca_cerveza(String marca_cerveza) {
-        this.marca_cerveza = marca_cerveza;
-    }
-
-    public String getStock() {
-        return stock;
-    }
-
-    public void setStock(String stock) {
-        this.stock = stock;
-    }
 }
